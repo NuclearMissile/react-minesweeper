@@ -4,7 +4,7 @@ import Board from './Board';
 const Game = () => {
     const [difficulty, setDifficulty] = useState('easy');
     const [gameTime, setGameTime] = useState(0);
-    const [gameStatus, setGameStatus] = useState('playing'); // waiting, playing
+    const [gameStatus, setGameStatus] = useState('waiting'); // waiting, playing
     const timerRef = useRef(null);
     const startTimeRef = useRef(null);
 
@@ -13,7 +13,6 @@ const Game = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
         }
-
         startTimeRef.current = Date.now();
         timerRef.current = setInterval(() =>
             setGameTime(Math.floor((Date.now() - startTimeRef.current) / 1000)), 1000);
@@ -24,21 +23,22 @@ const Game = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
+            startTimeRef.current = null;
         }
     };
 
     // Change difficulty
     const handleDifficultyChange = (newDifficulty) => {
-        setDifficulty(newDifficulty);
-        setGameTime(0);
-        stopTimer();
-        setGameStatus('waiting');
+        if (difficulty !== newDifficulty) {
+            setDifficulty(newDifficulty);
+            setGameTime(0);
+            stopTimer();
+            setGameStatus('waiting');
+        }
     };
 
     // Cleanup timer on unmount
-    useEffect(() => {
-        return () => stopTimer();
-    }, []);
+    useEffect(() => () => stopTimer(), []);
 
     return (
         <div className="minesweeper-game">
@@ -82,8 +82,8 @@ const Game = () => {
                 }}
                 onInteraction={() => {
                     if (gameStatus === 'waiting') {
-                        setGameStatus('playing');
                         startTimer();
+                        setGameStatus('playing');
                     }
                 }}
             />
