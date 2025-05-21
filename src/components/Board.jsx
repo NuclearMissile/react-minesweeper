@@ -17,9 +17,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
     const [flagsPlaced, setFlagsPlaced] = useState(0);
 
     // Initialize the board
-    useEffect(() => {
-        initializeBoard();
-    }, [difficulty]);
+    useEffect(() => initializeBoard(), [difficulty]);
 
     const initializeBoard = () => {
         // Create empty board
