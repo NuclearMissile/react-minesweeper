@@ -42,7 +42,9 @@ const Game = () => {
 
     return (
         <div className="minesweeper-game">
-            <h1>Minesweeper</h1>
+            <a href='https://github.com/NuclearMissile/react-minesweeper' target='_blank' rel='noopener noreferrer'>
+                <h1>Minesweeper</h1>
+            </a>
 
             <div className="game-controls">
                 <div className="difficulty-selector">

@@ -30,6 +30,10 @@
     margin-bottom: 10px;
 }
 
+.minesweeper-game a {
+    text-decoration: none;
+}
+
 /* Game Controls Styling */
 .game-controls {
     display: flex;
