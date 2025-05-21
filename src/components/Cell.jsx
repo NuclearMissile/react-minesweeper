@@ -1,7 +1,11 @@
 import React from 'react';
 
-const Cell = ({cell, onClick, onRightClick, onMiddleClick}) => {
+const Cell = ({cell, onClick, onRightClick, onMiddleClick, isLastClick}) => {
     const getCellContent = () => {
+        if (cell.isFlagged && cell.isRevealed && !cell.isMine) {
+            return '❌';
+        }
+
         if (cell.isFlagged) {
             return '🚩';
         }
@@ -27,8 +31,8 @@ const Cell = ({cell, onClick, onRightClick, onMiddleClick}) => {
         if (cell.isRevealed) {
             className += ' revealed';
 
-            if (cell.isMine) {
-                className += ' mine';
+            if (cell.isMine && isLastClick) {
+                className += ' triggered-mine';
             } else {
                 className += ` neighbor-${cell.neighborMines}`;
             }

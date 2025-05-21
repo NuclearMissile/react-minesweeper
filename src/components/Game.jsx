@@ -6,16 +6,15 @@ const Game = () => {
     const [gameTime, setGameTime] = useState(0);
     const [gameStatus, setGameStatus] = useState('waiting'); // waiting, playing
     const timerRef = useRef(null);
-    const startTimeRef = useRef(null);
 
     // Start the timer when game begins
     const startTimer = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
         }
-        startTimeRef.current = Date.now();
+        const startTime = Date.now();
         timerRef.current = setInterval(() =>
-            setGameTime(Math.floor((Date.now() - startTimeRef.current) / 1000)), 1000);
+            setGameTime(Math.floor((Date.now() - startTime) / 1000)), 1000);
     };
 
     // Stop the timer
@@ -23,7 +22,6 @@ const Game = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
-            startTimeRef.current = null;
         }
     };
 

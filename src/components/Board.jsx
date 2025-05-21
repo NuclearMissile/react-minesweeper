@@ -15,6 +15,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
     const [board, setBoard] = useState([]);
     const [gameStatus, setGameStatus] = useState('playing'); // 'playing', 'won', 'lost'
     const [flagsPlaced, setFlagsPlaced] = useState(0);
+    const [lastClick, setLastClick] = useState(null);
 
     // Initialize the board
     useEffect(() => initializeBoard(), [difficulty]);
@@ -76,11 +77,12 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
             return;
         }
 
+        setLastClick(`${row}-${col}`)
         const newBoard = [...board];
 
         // If clicked on a mine, game over
         if (newBoard[row][col].isMine) {
-            revealAllMines();
+            revealAllMinesAndFlags();
             setGameStatus('lost');
             onGameOver();
             return;
@@ -183,9 +185,10 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
                     if (r !== row || c !== col) {
                         const neighborCell = newBoard[r][c];
                         if (!neighborCell.isRevealed && !neighborCell.isFlagged) {
+                            setLastClick(`${r}-${c}`)
                             if (neighborCell.isMine) {
                                 // If we hit a mine, game over
-                                revealAllMines();
+                                revealAllMinesAndFlags();
                                 setGameStatus('lost');
                                 onGameOver();
                                 return;
@@ -226,12 +229,12 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
     };
 
     // Reveal all mines when game is over
-    const revealAllMines = () => {
+    const revealAllMinesAndFlags = () => {
         const newBoard = [...board];
 
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
-                if (newBoard[row][col].isMine) {
+                if (newBoard[row][col].isMine || newBoard[row][col].isFlagged) {
                     newBoard[row][col].isRevealed = true;
                 }
             }
@@ -259,6 +262,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
                     row.map((cell, colIndex) => (
                         <Cell
                             key={`${rowIndex}-${colIndex}`}
+                            isLastClick={lastClick === `${rowIndex}-${colIndex}`}
                             cell={cell}
                             onClick={() => handleCellClick(rowIndex, colIndex)}
                             onRightClick={(e) => handleCellRightClick(e, rowIndex, colIndex)}

@@ -129,7 +129,7 @@
     border: 1px solid #bdbdbd;
 }
 
-.cell.mine {
+.cell.triggered-mine {
     background-color: #ff5252;
 }
 
