@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Cell from './Cell';
 
 const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
@@ -257,7 +257,8 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
                     {gameStatus === 'playing' ? '😊' : gameStatus === 'won' ? '😎' : '😵'}
                 </button>
             </div>
-            <div className="board-grid" style={{gridTemplateColumns: `repeat(${cols}, 30px)`}}>
+            <div className="board-grid" style={{gridTemplateColumns: `repeat(${cols}, 35px)`}}
+                 onContextMenu={e => e.preventDefault()}>
                 {board.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
                         <Cell
