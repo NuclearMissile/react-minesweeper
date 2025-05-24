@@ -63,6 +63,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         setBoard(newBoard);
         setGameStatus('playing');
         setFlagsPlaced(0);
+        setLastClick(null);
     }, [rows, cols, mines]);
 
     // Initialize the board
