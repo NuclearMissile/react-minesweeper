@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Cell from './Cell';
 
 const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
@@ -17,10 +17,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
     const [flagsPlaced, setFlagsPlaced] = useState(0);
     const [lastClick, setLastClick] = useState(null);
 
-    // Initialize the board
-    useEffect(() => initializeBoard(), [difficulty]);
-
-    const initializeBoard = () => {
+    const initializeBoard = useCallback(() => {
         // Create empty board
         const newBoard = Array(rows).fill().map(() =>
             Array(cols).fill().map(() => ({
@@ -66,7 +63,10 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         setBoard(newBoard);
         setGameStatus('playing');
         setFlagsPlaced(0);
-    };
+    }, [rows, cols, mines]);
+
+    // Initialize the board
+    useEffect(initializeBoard, [difficulty, initializeBoard]);
 
     // Handle cell click (reveal)
     const handleCellClick = (row, col) => {
