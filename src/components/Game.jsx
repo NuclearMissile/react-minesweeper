@@ -25,13 +25,16 @@ const Game = () => {
         }
     };
 
-    // Change difficulty
-    const handleDifficultyChange = (newDifficulty) => {
-        if (difficulty !== newDifficulty) {
-            setDifficulty(newDifficulty);
-            setGameTime(0);
-            stopTimer();
-            setGameStatus('waiting');
+    const handleReset = () => {
+        setGameTime(0);
+        stopTimer();
+        setGameStatus('waiting');
+    };
+
+    const handleInteraction = () => {
+        if (gameStatus === 'waiting') {
+            startTimer();
+            setGameStatus('playing');
         }
     };
 
@@ -48,19 +51,19 @@ const Game = () => {
                 <div className="difficulty-selector">
                     <button
                         className={difficulty === 'easy' ? 'active' : ''}
-                        onClick={() => handleDifficultyChange('easy')}
+                        onClick={() => setDifficulty('easy')}
                     >
                         Easy
                     </button>
                     <button
                         className={difficulty === 'medium' ? 'active' : ''}
-                        onClick={() => handleDifficultyChange('medium')}
+                        onClick={() => setDifficulty('medium')}
                     >
                         Medium
                     </button>
                     <button
                         className={difficulty === 'hard' ? 'active' : ''}
-                        onClick={() => handleDifficultyChange('hard')}
+                        onClick={() => setDifficulty('hard')}
                     >
                         Hard
                     </button>
@@ -71,19 +74,10 @@ const Game = () => {
 
             <Board
                 difficulty={difficulty}
-                onGameOver={() => stopTimer()}
-                onGameWin={() => stopTimer()}
-                onReset={() => {
-                    setGameTime(0);
-                    stopTimer();
-                    setGameStatus('waiting');
-                }}
-                onInteraction={() => {
-                    if (gameStatus === 'waiting') {
-                        startTimer();
-                        setGameStatus('playing');
-                    }
-                }}
+                onGameOver={stopTimer}
+                onGameWin={stopTimer}
+                onReset={handleReset}
+                onInteraction={handleInteraction}
             />
         </div>
     );

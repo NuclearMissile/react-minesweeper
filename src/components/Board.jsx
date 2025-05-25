@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import Cell from './Cell';
 
 const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
@@ -13,11 +13,11 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
 
     // Game state
     const [board, setBoard] = useState([]);
-    const [gameStatus, setGameStatus] = useState('playing'); // 'playing', 'won', 'lost'
+    const [gameState, setGameState] = useState('playing'); // 'playing', 'won', 'lost'
     const [flagsPlaced, setFlagsPlaced] = useState(0);
     const [lastClick, setLastClick] = useState(null);
 
-    const initializeBoard = useCallback(() => {
+    const setUpBoard = () => {
         // Create empty board
         const newBoard = Array(rows).fill().map(() =>
             Array(cols).fill().map(() => ({
@@ -61,30 +61,36 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         }
 
         setBoard(newBoard);
-        setGameStatus('playing');
+    };
+
+    // Reset the game
+    const resetGame = () => {
+        setUpBoard();
+        setGameState('playing');
         setFlagsPlaced(0);
         setLastClick(null);
-    }, [rows, cols, mines]);
+        onReset();
+    };
 
     // Initialize the board
-    useEffect(initializeBoard, [difficulty, initializeBoard]);
+    useEffect(resetGame, [difficulty]);
 
     // Handle cell click (reveal)
     const handleCellClick = (row, col) => {
         // Notify Game component about first interaction
         onInteraction();
 
-        if (gameStatus !== 'playing' || board[row][col].isRevealed || board[row][col].isFlagged) {
+        if (gameState !== 'playing' || board[row][col].isRevealed || board[row][col].isFlagged) {
             return;
         }
 
-        setLastClick(`${row}-${col}`)
+        setLastClick(`${row}-${col}`);
         const newBoard = [...board];
 
         // If clicked on a mine, game over
         if (newBoard[row][col].isMine) {
             revealAllMinesAndFlags();
-            setGameStatus('lost');
+            setGameState('lost');
             onGameOver();
             return;
         }
@@ -93,7 +99,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         revealCell(newBoard, row, col);
 
         if (winCheck(newBoard)) {
-            setGameStatus('won');
+            setGameState('won');
             onGameWin();
         }
 
@@ -132,7 +138,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         // Notify Game component about first interaction
         onInteraction();
 
-        if (gameStatus !== 'playing' || board[row][col].isRevealed) {
+        if (gameState !== 'playing' || board[row][col].isRevealed) {
             return;
         }
 
@@ -142,7 +148,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         setFlagsPlaced(prev => newBoard[row][col].isFlagged ? prev + 1 : prev - 1);
 
         if (winCheck(newBoard)) {
-            setGameStatus('won');
+            setGameState('won');
             onGameWin();
         }
 
@@ -154,7 +160,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         // Notify Game component about first interaction
         onInteraction();
 
-        if (gameStatus !== 'playing') {
+        if (gameState !== 'playing') {
             return;
         }
 
@@ -190,7 +196,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
                             if (neighborCell.isMine) {
                                 // If we hit a mine, game over
                                 revealAllMinesAndFlags();
-                                setGameStatus('lost');
+                                setGameState('lost');
                                 onGameOver();
                                 return;
                             } else {
@@ -203,7 +209,7 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
             }
 
             if (winCheck(newBoard)) {
-                setGameStatus('won');
+                setGameState('won');
                 onGameWin();
             }
 
@@ -244,18 +250,12 @@ const Board = ({difficulty, onGameOver, onGameWin, onReset, onInteraction}) => {
         setBoard(newBoard);
     };
 
-    // Reset the game
-    const resetGame = () => {
-        initializeBoard();
-        onReset();
-    };
-
     return (
         <div className="minesweeper-board">
             <div className="game-info">
                 <div className="mines-counter">Mines: {mines - flagsPlaced}</div>
                 <button className="reset-button" onClick={resetGame}>
-                    {gameStatus === 'playing' ? '😊' : gameStatus === 'won' ? '😎' : '😵'}
+                    {gameState === 'playing' ? '😊' : gameState === 'won' ? '😎' : '😵'}
                 </button>
             </div>
             <div className="board-grid" style={{gridTemplateColumns: `repeat(${cols}, 35px)`}}
